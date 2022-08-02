@@ -54,11 +54,11 @@ class Deserializer {
     }
   }
 
-  instanceFor(type: string): SpraypaintBase {
+  instanceFor(type: string): SpraypaintBase | undefined {
     const klass = this.registry.get(type)
 
     if (!klass) {
-      throw new Error(`Unknown type "${type}"`)
+      return undefined
     }
 
     return new klass()
@@ -78,6 +78,10 @@ class Deserializer {
 
     if (!record) {
       record = this.instanceFor(datum.type)
+    }
+
+    if (record == undefined) {
+      throw new Error("Can't deserialize unknown type " + datum.type)
     }
 
     return record
@@ -113,6 +117,9 @@ class Deserializer {
 
   deserialize(datum: JsonapiResource): SpraypaintBase {
     const instance = this.instanceFor(datum.type)
+    if (instance == undefined) {
+      throw new Error("Can't deserialize unknown type " + datum.type)
+    }
     return this.deserializeInstance(instance, datum, {})
   }
 
@@ -219,6 +226,15 @@ class Deserializer {
           const hydratedDatum = this.findResource(relationData)
           const existing = instanceIdx[relationName]
           let associated = existing || this.instanceFor(hydratedDatum.type)
+
+          if (associated == undefined) {
+            console.warn(
+              `Unknown associated type ${
+                hydratedDatum.type
+              }, skipping deserialization`
+            )
+            return
+          }
 
           associated = this.deserializeInstance(
             associated,
