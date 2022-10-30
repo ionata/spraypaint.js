@@ -99,6 +99,12 @@ export class WritePayload<T extends SpraypaintBase> {
 
       let data: any
       const relatedModels = (<any>this.model)[key]
+
+      if (relatedModels === null) {
+        _relationships[this.model.klass.serializeKey(key)] = { data: null }
+        return
+      }
+
       if (relatedModels) {
         if (Array.isArray(relatedModels)) {
           data = []

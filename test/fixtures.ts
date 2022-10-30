@@ -78,7 +78,7 @@ export class Author extends Person {
   @HasMany("books") specialBooks!: Book[]
   @HasMany() books!: Book[]
   @HasMany() tags!: Tag[]
-  @BelongsTo({ type: "genres" }) genre!: Genre
+  @BelongsTo({ type: "genres" }) genre!: Genre | null
   @HasOne("bios") bio!: Bio
 }
 

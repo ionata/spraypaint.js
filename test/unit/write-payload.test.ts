@@ -125,6 +125,32 @@ describe("WritePayload", () => {
     })
   })
 
+  describe("removes persisted singular relationships defined via", () => {
+    const expectedPayload = {
+      data: {
+        type: "authors",
+        relationships: {
+          genre: {
+            data: null
+          }
+        }
+      }
+    }
+
+    it("constructor", () => {
+      const author = new Author({ genre: null })
+      const payload = new WritePayload(author, ["genre"])
+      expect(payload.asJSON()).to.deep.equal(expectedPayload)
+    })
+
+    it("direct assignment", () => {
+      const author = new Author()
+      author.genre = null
+      const payload = new WritePayload(author, ["genre"])
+      expect(payload.asJSON()).to.deep.equal(expectedPayload)
+    })
+  })
+
   describe("sends persisted plural relationships defined via", () => {
     const book = new Book({ title: "Horror", id: "1" })
     book.isPersisted = true
