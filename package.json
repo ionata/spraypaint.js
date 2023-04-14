@@ -110,5 +110,5 @@
   "resolutions": {
     "@types/sinon-chai/@types/sinon": "^4.1.2"
   },
-  "version": "0.10.25"
+  "version": "0.10.26"
 }
