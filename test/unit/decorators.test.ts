@@ -110,6 +110,19 @@ describe("Decorators", () => {
         })
       })
 
+      it("allows specifying a name", () => {
+        @Model()
+        class TestClass extends BaseModel {
+          @Attr({ name: "test" })
+          testField!: string
+        }
+
+        expect(TestClass.attributeList.testField).to.include({
+          name: "test",
+          key: "testField"
+        })
+      })
+
       it("can be used without args", () => {
         @Model()
         class TestClass extends BaseModel {
@@ -239,6 +252,19 @@ describe("Decorators", () => {
             persist: true,
             jsonapiType: "test_associations",
             name: "testField"
+          })
+        })
+
+        it("allows name to be provided", () => {
+          @Model()
+          class TestClass extends BaseModel {
+            @Assoc({ name: "testRenamed" })
+            testField: any
+          }
+
+          expect(TestClass.attributeList.testField).to.include({
+            persist: true,
+            name: "testRenamed"
           })
         })
 

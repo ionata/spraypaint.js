@@ -458,10 +458,10 @@ export class SpraypaintBase {
   private _copyPrototypeDescriptors() {
     const attrs = this.klass.attributeList
 
-    for (const key in attrs) {
-      if (attrs.hasOwnProperty(key)) {
-        const attr = attrs[key]
-        Object.defineProperty(this, key, attr.descriptor())
+    for (const [key, value] of Object.entries(attrs)) {
+      if (attrs.hasOwnProperty(value.key || key)) {
+        const attr = attrs[value.key || key]
+        Object.defineProperty(this, value.key || key, attr.descriptor())
       }
     }
 
@@ -512,13 +512,21 @@ export class SpraypaintBase {
       Object.keys(attrs).forEach(k => {
         let self = this as any
         let changes = this.changes() as any
-        let attrDef = this.klass.attributeList[k]
-        if (attrDef.dirtyChecker(self[k], attrs[k]) && !changes[k]) {
-          diff[k] = [self[k], attrs[k]]
-          self[k] = attrs[k]
 
-          // ensure this property is not marked as dirty
-          self._originalAttributes[k] = attrs[k]
+        let attrDef =
+          Object.values(this.klass.attributeList).find(
+            value => value.name === k
+          ) || this.klass.attributeList[k]
+        if (
+          attrDef &&
+          attrDef.dirtyChecker(self[attrDef.key], attrs[attrDef.key]) &&
+          !changes[attrDef.key]
+        ) {
+          diff[attrDef.key] = [self[attrDef.key], attrs[attrDef.key]]
+          self[attrDef.key] = attrs[attrDef.key]
+
+          // ensure this property is not marattrDef.named as dirty
+          self._originalAttributes[attrDef.key] = attrs[attrDef.key]
         }
       })
 
@@ -920,6 +928,9 @@ export class SpraypaintBase {
   }
 
   static serializeKey(key: string): string {
+    if (this.attributeList && this.attributeList[key]) {
+      key = this.attributeList[key].name
+    }
     switch (this.keyCase.server) {
       case "dash": {
         return dasherize(underscore(key))
@@ -934,6 +945,12 @@ export class SpraypaintBase {
   }
 
   static deserializeKey(key: string): string {
+    const property = Object.entries(this.attributeList).find(
+      ([_, value]) => value.name === key
+    )
+    if (property) {
+      key = property[0]
+    }
     switch (this.keyCase.client) {
       case "dash": {
         return dasherize(underscore(key))

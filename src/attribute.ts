@@ -44,6 +44,7 @@ export class Attribute<T = any> {
   persist: boolean = true
   dirtyChecker: DirtyChecker<T> = STRICT_EQUALITY_DIRTY_CHECKER
   owner!: typeof SpraypaintBase
+  key!: string
 
   constructor(options: AttrRecord<T>) {
     if (!options) {
@@ -68,18 +69,18 @@ export class Attribute<T = any> {
   }
 
   apply(ModelClass: typeof SpraypaintBase): void {
-    Object.defineProperty(ModelClass.prototype, this.name, this.descriptor())
+    Object.defineProperty(ModelClass.prototype, this.key, this.descriptor())
   }
 
   // The model calls this setter
   setter(context: SpraypaintBase, val: any): void {
     const privateContext: any = context
-    privateContext._attributes[this.name] = val
+    privateContext._attributes[this.key || this.name] = val
   }
 
   // The model calls this getter
   getter(context: SpraypaintBase): any {
-    return context.attributes[this.name]
+    return context.attributes[this.key || this.name]
   }
 
   // This returns the getters/setters for use on the *model*

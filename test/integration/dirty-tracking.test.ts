@@ -70,7 +70,6 @@ describe("Dirty tracking", () => {
       }
       await instance.save()
       expect(instance.isPersisted).to.eq(true)
-      console.log(instance.changes())
       expect(instance.isDirty()).to.eq(false)
 
       instance.coordinates.lon = 4

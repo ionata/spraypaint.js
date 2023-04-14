@@ -23,6 +23,7 @@ export class Person extends ApplicationRecord {
 
   @Attr firstName!: string | null
   @Attr lastName!: string | null
+  @Attr({ name: "favoriteColor" }) color?: "string"
   @Attr({ type: Number }) age!: number | null
   @BelongsTo({ type: "person_details" }) personDetail!: PersonDetail
 }
@@ -76,6 +77,7 @@ export class Author extends Person {
   @Attr nilly!: string
   @HasMany({ type: "multi_words" }) multiWords!: MultiWord[]
   @HasMany("books") specialBooks!: Book[]
+  @HasMany({ name: "bestselling_books" }) bestsellers!: Book[]
   @HasMany() books!: Book[]
   @HasMany() tags!: Tag[]
   @BelongsTo({ type: "genres" }) genre!: Genre | null

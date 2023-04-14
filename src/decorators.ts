@@ -123,10 +123,12 @@ const AttrDecoratorFactory: {
   ): PropertyDescriptor => {
     ensureModelInheritance(ModelClass)
 
+    attrDefinition.key = propKey
+
     if (!attrDefinition.name) {
       attrDefinition.name = propKey
     }
-    ModelClass.attributeList[propKey] = attrDefinition
+    ModelClass.attributeList[propKey || attrDefinition.name] = attrDefinition
     attrDefinition.apply(ModelClass)
 
     return attrDefinition.descriptor()

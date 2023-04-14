@@ -91,6 +91,7 @@ describe("Model", () => {
               }
 
               if (typeof localStorage !== "undefined") {
+                localStorage.clear()
                 originalStorage = localStorage
               }
               ;(global as any).localStorage = localStorageStub
@@ -599,7 +600,8 @@ describe("Model", () => {
         attributes: {
           firstName: "Donald Budge",
           unknown: "adsf",
-          nilly: null
+          nilly: null,
+          favoriteColor: "green"
         },
         relationships: {
           unknownrelationship: {
@@ -636,6 +638,14 @@ describe("Model", () => {
             ]
           },
           special_books: {
+            data: [
+              {
+                id: "3",
+                type: "books"
+              }
+            ]
+          },
+          bestselling_books: {
             data: [
               {
                 id: "3",
@@ -737,8 +747,22 @@ describe("Model", () => {
       expect(instance.firstName).to.eq("Donald Budge")
       expect(instance.attributes).to.eql({
         firstName: "Donald Budge",
-        nilly: null
+        nilly: null,
+        color: "green"
       })
+    })
+
+    it("assigns renamed attributes correctly", () => {
+      const instance = ApplicationRecord.fromJsonapi(doc.data, doc)
+      expect(instance.color).to.eq("green")
+    })
+
+    it("assigns renamed relationships correctly", () => {
+      const instance = ApplicationRecord.fromJsonapi(doc.data, doc)
+      expect(instance.bestsellers.length).to.eq(1)
+      const book = instance.bestsellers[0]
+      expect(book).to.be.instanceof(Book)
+      expect(book.title).to.eq("Peanut Butter & Cupcake")
     })
 
     it("camelizes relationship names", () => {
